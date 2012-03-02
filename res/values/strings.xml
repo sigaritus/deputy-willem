@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShanBayQuery</string>
+    <string name="query">查找</string>
+    <string name="add">添加</string>
+    <string name="added">已添加</string>
+    <string name="audio">读音</string>
+    <string name="notexist">找不到</string>
+</resources>
