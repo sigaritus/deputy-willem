@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShanBayQuery</string>
-    <string name="query">查找</string>
-    <string name="add">添加</string>
-    <string name="added">已添加</string>
-    <string name="audio">读音</string>
-    <string name="notexist">找不到</string>
+    <string name="query">Query</string>
+    <string name="add">Add</string>
+    <string name="added">Added</string>
+    <string name="audio">Play</string>
+    <string name="notexist">Can\'t found this word</string>
+    <string name="listenning_clipboard">Listenning Clipboard</string>
+    <string name="notif_text_remove_clipboard_listenner">Touch to remove clipboard listenner</string>
+    <string name="bind_to_notification_bar">Binded to notification bar</string>
+    <string name="notif_text_query_text_in_clipboard">Touch to query text in clipboard</string>
+    <string name="menu_remove_clipboard_listener">Unlisten clipboard</string>
+    <string name="menu_set_clipboard_listener">Listen clipboard</string>
+    <string name="menu_unbind_notification">Unbind Notification</string>
+    <string name="menu_bind_notification">Bind Notification</string>
 </resources>

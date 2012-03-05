@@ -24,6 +24,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.net.http.AndroidHttpClient;
@@ -46,6 +47,8 @@ public class ShanbayDict {
 			+ "/api/learning/add/";
 	private final static String API_USER_INFO = "http://" + HOST
 			+ "/api/user/info/";
+	private final static String API_ADD_NOTE = "http://" + HOST
+			+ "/api/note/add/{{learning_id}}?note=";
 	private final static String USER_AGENT = "Mozilla/5.0 (X11; U; Linux "
 			+ "i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)";
 
@@ -246,7 +249,7 @@ public class ShanbayDict {
 		return false;
 	}
 
-	public void addWord(WordWrapper word) {
+	public void addWord(Word word) {
 		if (word == null) {
 			throw new IllegalArgumentException("不能为空");
 		}
@@ -257,7 +260,7 @@ public class ShanbayDict {
 		}
 	}
 
-	private void addWord(WordWrapper word, boolean recall) throws IOException {
+	private void addWord(Word word, boolean recall) throws IOException {
 		try {
 			HttpGet getAdd = new HttpGet(API_ADD_WORD + word.mContent);
 			JSONObject json = getClient().execute(getAdd, responseHandler,
@@ -280,7 +283,7 @@ public class ShanbayDict {
 		}
 	}
 
-	public WordWrapper query(String word) {
+	public Word query(String word) {
 		if (word == null || word.equals("")) {
 			return null;
 			// throw new IllegalArgumentException("不能为空");
@@ -299,7 +302,7 @@ public class ShanbayDict {
 	}
 
 	/**
-	 * 见 {@link #addWord(WordWrapper, boolean)}
+	 * 见 {@link #addWord(Word, boolean)}
 	 * 
 	 * @param word
 	 * @param recall
@@ -307,9 +310,9 @@ public class ShanbayDict {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	private WordWrapper query(String word, boolean recall) throws IOException,
+	private Word query(String word, boolean recall) throws IOException,
 			JSONException {
-		word.trim();
+		word = word.trim();
 		HttpGet getQuery = new HttpGet(API_QUERY + word);
 		// Log.d("query url",QUERY_URL + word);
 		JSONObject json = getClient().execute(getQuery, responseHandler,
@@ -327,8 +330,40 @@ public class ShanbayDict {
 				return null;
 			}
 		} else {
-			return new WordWrapper(json);
+			return new Word(json);
 		}
+	}
+
+	public void addNote(Word word, String note) {
+		if (word == null || note == null) {
+			throw new IllegalArgumentException("不能为空");
+		}
+		if(note.length()>300){
+			throw new IllegalArgumentException("笔记总长度不能超过300个字符");
+		}
+		try {
+			addNote(word,note, false);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private void addNote(Word word, String note, boolean recall) throws IOException {
+		note = note.trim();
+		HttpGet getQuery = new HttpGet(API_QUERY.replace("{{learning_id}}",
+				Integer.toString(word.mLearningId)).concat(note));
+
+		JSONObject json = getClient().execute(getQuery, responseHandler,
+				mLocalContext);
+		getQuery.abort();
+
+		if (json == null) {
+			if (!recall) {
+				if (login()) {
+					addNote(word, note, true);
+				} 
+			} 
+		} 
 	}
 
 	JSONResponseHandler responseHandler = new JSONResponseHandler();
@@ -362,7 +397,7 @@ public class ShanbayDict {
 	 * @author DouO
 	 * 
 	 */
-	public static class WordWrapper implements Parcelable {
+	public static class Word implements Parcelable {
 		static enum ATTITYPE {
 
 		}
@@ -380,7 +415,7 @@ public class ShanbayDict {
 		String mContent;
 		String mEnDefinition;
 
-		public WordWrapper(JSONObject json) throws JSONException {
+		public Word(JSONObject json) throws JSONException {
 			mLearningId = json.getInt("learning_id");
 			Object tmp = json.get("voc");
 			if (tmp instanceof JSONObject) {
@@ -410,16 +445,16 @@ public class ShanbayDict {
 			return mLearningId != 0;
 		}
 
-		public static final Parcelable.Creator<WordWrapper> CREATOR = new Creator<WordWrapper>() {
+		public static final Parcelable.Creator<Word> CREATOR = new Creator<Word>() {
 
 			@Override
-			public WordWrapper createFromParcel(Parcel parcel) {
-				return new WordWrapper(parcel);
+			public Word createFromParcel(Parcel parcel) {
+				return new Word(parcel);
 			}
 
 			@Override
-			public WordWrapper[] newArray(int i) {
-				return new WordWrapper[i];
+			public Word[] newArray(int i) {
+				return new Word[i];
 			}
 		};
 
@@ -451,8 +486,75 @@ public class ShanbayDict {
 			mEnDefinition = parcel.readString();
 		}
 
-		private WordWrapper(Parcel parcel) {
+		private Word(Parcel parcel) {
 			readFromParcel(parcel);
+		}
+	}
+	
+	public static class Examples implements Parcelable {
+		int mExamplesStatus;
+		Example [] mExamples;
+		public Examples(JSONObject json) throws JSONException{
+			mExamplesStatus =json.getInt("examples_status");
+			if(mExamplesStatus==1){
+				JSONArray array =json.getJSONArray("examples");
+				mExamples = new Example[array.length()];
+				for(int i=0; i<array.length(); i++){
+					mExamples[i] = new Example(array.getJSONObject(i));
+				}
+			}else{
+				throw new JSONException("example status exception");
+			}
+		}
+
+		@Override
+		public int describeContents() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			//TODO NOTSUPPORTEDYET			
+		}
+		public static class Example implements Parcelable{
+			int mId;
+			String mUsername;
+			int mUserid;
+			String mFirst;
+			String mMid;
+			String mLast;
+			String mTranslation;
+			int mVersion;
+			int mLikes;
+			int mUnlikes;
+			
+			public Example(JSONObject json) throws JSONException {
+				mId = json.getInt("id");
+				mUsername = json.getString("username");
+				mUserid = json.getInt("userid");
+				mFirst = json.getString("first");
+				mMid = json.getString("mid");
+				mLast = json.getString("last");
+				mTranslation = json.getString("translation");
+				mVersion = json.getInt("version");
+				mLikes =  json.getInt("likes");
+				mUnlikes = json.getInt("unlikes"); 
+			}
+			
+			
+			@Override
+			public int describeContents() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public void writeToParcel(Parcel dest, int flags) {
+				// TODO Auto-generated method stub
+				
+			}
+			
 		}
 	}
 }

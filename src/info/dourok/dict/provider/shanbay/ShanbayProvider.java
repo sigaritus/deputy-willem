@@ -3,7 +3,7 @@ package info.dourok.dict.provider.shanbay;
 import info.dourok.dict.MiscUtils;
 import info.dourok.dict.R;
 import info.dourok.dict.provider.Provider;
-import info.dourok.dict.provider.shanbay.ShanbayDict.WordWrapper;
+import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,10 +37,10 @@ public class ShanbayProvider extends Provider {
 	private final static int MSG_LOGIN_FAILED = MSG_MIN_VALUE + 6;
 
 	String mUsername;
-	private ShanbayView mShanbayView;
-	private WordWrapper mWordWrapper;
+	
+	Word mWordWrapper;
 	ShanbayLoginActivity mShanbayLoginActivity;
-
+	private ShanbayView mShanbayView;
 	// Provider.MessageObj mProvider.MessageObj;
 
 	public ShanbayProvider(Context context) {
@@ -125,7 +125,7 @@ public class ShanbayProvider extends Provider {
 		switch (newWhat) {
 		case MSG_ADD_WORD:
 			Provider.MessageObj obj = (Provider.MessageObj) msg.obj;
-			WordWrapper wordWrapper = (WordWrapper) obj.obj;
+			Word wordWrapper = (Word) obj.obj;
 			mShanbayDict.addWord(wordWrapper);
 			try {
 				msg.replyTo.send(Message.obtain(null, MSG_ADD_WORD_FINISHED,
@@ -136,7 +136,7 @@ public class ShanbayProvider extends Provider {
 			break;
 		case MSG_LOADING_AUDIO:
 			obj = (Provider.MessageObj) msg.obj;
-			wordWrapper = (WordWrapper) obj.obj;
+			wordWrapper = (Word) obj.obj;
 			playAudio(wordWrapper);
 			break;
 		case MSG_LOGIN:
@@ -174,7 +174,7 @@ public class ShanbayProvider extends Provider {
 
 	}
 
-	private void playAudio(WordWrapper wordWrapper) {
+	private void playAudio(Word wordWrapper) {
 		Uri uri = Uri.parse(wordWrapper.mAudioUrl);
 		if (uri == null) {
 			return;
@@ -218,7 +218,7 @@ public class ShanbayProvider extends Provider {
 		Button mAudioButton;
 		Button mLoginButton;
 
-		private ShanbayDict.WordWrapper mWordWrapper;
+		//private ShanbayDict.WordWrapper mWordWrapper;
 		private View mWordContainer;
 		private View mLoginContainer;
 		private View mBlankContainer;
@@ -255,7 +255,7 @@ public class ShanbayProvider extends Provider {
 			showBlankPanel();
 		}
 
-		public void setWordWrapper(ShanbayDict.WordWrapper wordWrapper) {
+		public void setWordWrapper(ShanbayDict.Word wordWrapper) {
 			// FIXME 登录失败的消息,比查词结束的消息先到,这样写应该没问题,但是最好还是设置个needLogin变量
 			if (root.getCurrentView() != mLoginContainer) {
 				mWordWrapper = wordWrapper;

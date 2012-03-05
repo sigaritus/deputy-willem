@@ -105,13 +105,13 @@ public class DictService extends Service implements DictCommunication {
 		mClipboardAgency.bindClipboard();
 		NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		int icon = R.drawable.touch_icon;
-		CharSequence tickerText = "Listenning Clipboard";
+		CharSequence tickerText = getString(R.string.listenning_clipboard);
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, tickerText, when);
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 		Context context = getApplicationContext();
-		CharSequence contentTitle = "DeputyDict";
-		CharSequence contentText = "Listenning Clipboard";
+		CharSequence contentTitle = getString(R.string.listenning_clipboard);
+		CharSequence contentText = getString(R.string.notif_text_remove_clipboard_listenner);
 		Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setAction(ACTION_CANCEL_BINDING_CLIPBOARD);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -138,13 +138,13 @@ public class DictService extends Service implements DictCommunication {
 
 		NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		int icon = R.drawable.touch_icon;
-		CharSequence tickerText = "Hello";
+		CharSequence tickerText = getString(R.string.bind_to_notification_bar);
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, tickerText, when);
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 		Context context = getApplicationContext();
-		CharSequence contentTitle = "My notification";
-		CharSequence contentText = "Hello World!";
+		CharSequence contentTitle = getString(R.string.app_name);
+		CharSequence contentText = getString(R.string.notif_text_query_text_in_clipboard);
 		Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setAction(ACTION_QUERY_CLIPBOARD);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

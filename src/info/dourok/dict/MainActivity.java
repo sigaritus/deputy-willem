@@ -215,13 +215,13 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		// TODO Auto-generated method stub
 		MenuItem item = menu.findItem(MENU_CLIPBOARD);
 		if (item != null) {
-			item.setTitle(mClipboardAgency.isBinding() ? "unbind clipboard"
-					: "bind clipboard");
+			item.setTitle(mClipboardAgency.isBinding() ? R.string.menu_remove_clipboard_listener
+					: R.string.menu_set_clipboard_listener);
 		}
 		item = menu.findItem(MENU_NOTIFICATION);
 		if (item != null) {
-			item.setTitle(DictService.sBindingNotification ? "unbind Notification"
-					: "bind Notification");
+			item.setTitle(DictService.sBindingNotification ? R.string.menu_unbind_notification
+					: R.string.menu_bind_notification);
 		}
 
 		return super.onPrepareOptionsMenu(menu);

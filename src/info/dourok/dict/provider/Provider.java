@@ -97,7 +97,7 @@ public abstract class Provider implements DictCommunication {
 		}
 	}
 
-	public final void update() {
+	final void update() {
 		onUpdate();
 	}
 
@@ -107,7 +107,7 @@ public abstract class Provider implements DictCommunication {
 	}
 
 	/**
-	 * 更新结果
+	 * 更新结果,可安全地更新UI状态
 	 */
 	protected abstract void onUpdate();
 
