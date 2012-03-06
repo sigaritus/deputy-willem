@@ -7,6 +7,7 @@ package info.dourok.dict.provider.shanbay;
 import info.dourok.dict.AppCookieStore;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -338,17 +339,18 @@ public class ShanbayDict {
 		if (word == null || note == null) {
 			throw new IllegalArgumentException("不能为空");
 		}
-		if(note.length()>300){
+		if (note.length() > 300) {
 			throw new IllegalArgumentException("笔记总长度不能超过300个字符");
 		}
 		try {
-			addNote(word,note, false);
+			addNote(word, note, false);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
-	private void addNote(Word word, String note, boolean recall) throws IOException {
+
+	private void addNote(Word word, String note, boolean recall)
+			throws IOException {
 		note = note.trim();
 		HttpGet getQuery = new HttpGet(API_QUERY.replace("{{learning_id}}",
 				Integer.toString(word.mLearningId)).concat(note));
@@ -361,9 +363,9 @@ public class ShanbayDict {
 			if (!recall) {
 				if (login()) {
 					addNote(word, note, true);
-				} 
-			} 
-		} 
+				}
+			}
+		}
 	}
 
 	JSONResponseHandler responseHandler = new JSONResponseHandler();
@@ -423,7 +425,18 @@ public class ShanbayDict {
 				// mContentId = voc.getInt("content_id");
 				mContent = voc.getString("content");
 				mDefinition = voc.getString("definition");
-				mEnDefinition = voc.getString("en_definitions");
+				JSONObject en = voc.getJSONObject("en_definitions");
+				Iterator<?> itr = en.keys();
+				System.out.println(en);
+
+				while (itr.hasNext()) {
+					String k = (String) itr.next();
+					mEnDefinition = k + " : ";
+					JSONArray array = en.getJSONArray(k);
+					for (int i = 0; i < array.length(); i++)
+						mEnDefinition += array.getString(i) + "\n";
+				}
+
 				mPron = voc.getString("pron");
 				mAudioUrl = voc.getString("audio");
 				String type = voc.getString("content_type");
@@ -490,19 +503,20 @@ public class ShanbayDict {
 			readFromParcel(parcel);
 		}
 	}
-	
+
 	public static class Examples implements Parcelable {
 		int mExamplesStatus;
-		Example [] mExamples;
-		public Examples(JSONObject json) throws JSONException{
-			mExamplesStatus =json.getInt("examples_status");
-			if(mExamplesStatus==1){
-				JSONArray array =json.getJSONArray("examples");
+		Example[] mExamples;
+
+		public Examples(JSONObject json) throws JSONException {
+			mExamplesStatus = json.getInt("examples_status");
+			if (mExamplesStatus == 1) {
+				JSONArray array = json.getJSONArray("examples");
 				mExamples = new Example[array.length()];
-				for(int i=0; i<array.length(); i++){
+				for (int i = 0; i < array.length(); i++) {
 					mExamples[i] = new Example(array.getJSONObject(i));
 				}
-			}else{
+			} else {
 				throw new JSONException("example status exception");
 			}
 		}
@@ -515,9 +529,10 @@ public class ShanbayDict {
 
 		@Override
 		public void writeToParcel(Parcel dest, int flags) {
-			//TODO NOTSUPPORTEDYET			
+			// TODO NOTSUPPORTEDYET
 		}
-		public static class Example implements Parcelable{
+
+		public static class Example implements Parcelable {
 			int mId;
 			String mUsername;
 			int mUserid;
@@ -528,7 +543,7 @@ public class ShanbayDict {
 			int mVersion;
 			int mLikes;
 			int mUnlikes;
-			
+
 			public Example(JSONObject json) throws JSONException {
 				mId = json.getInt("id");
 				mUsername = json.getString("username");
@@ -538,11 +553,10 @@ public class ShanbayDict {
 				mLast = json.getString("last");
 				mTranslation = json.getString("translation");
 				mVersion = json.getInt("version");
-				mLikes =  json.getInt("likes");
-				mUnlikes = json.getInt("unlikes"); 
+				mLikes = json.getInt("likes");
+				mUnlikes = json.getInt("unlikes");
 			}
-			
-			
+
 			@Override
 			public int describeContents() {
 				// TODO Auto-generated method stub
@@ -552,9 +566,9 @@ public class ShanbayDict {
 			@Override
 			public void writeToParcel(Parcel dest, int flags) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		}
 	}
 }

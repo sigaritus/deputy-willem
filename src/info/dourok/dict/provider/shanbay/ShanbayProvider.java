@@ -37,10 +37,11 @@ public class ShanbayProvider extends Provider {
 	private final static int MSG_LOGIN_FAILED = MSG_MIN_VALUE + 6;
 
 	String mUsername;
-	
+
 	Word mWordWrapper;
 	ShanbayLoginActivity mShanbayLoginActivity;
 	private ShanbayView mShanbayView;
+
 	// Provider.MessageObj mProvider.MessageObj;
 
 	public ShanbayProvider(Context context) {
@@ -217,8 +218,10 @@ public class ShanbayProvider extends Provider {
 		Button mAddButton;
 		Button mAudioButton;
 		Button mLoginButton;
+		Button mSwitchButton;
+		boolean mSwitchButtonState; // false zh , true en
 
-		//private ShanbayDict.WordWrapper mWordWrapper;
+		// private ShanbayDict.WordWrapper mWordWrapper;
 		private View mWordContainer;
 		private View mLoginContainer;
 		private View mBlankContainer;
@@ -227,18 +230,21 @@ public class ShanbayProvider extends Provider {
 			super(context);
 			LayoutInflater inflater = (LayoutInflater) mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			root = (ViewAnimator) inflater.inflate(R.layout.word_view, null);
+			root = (ViewAnimator) inflater.inflate(R.layout.sb_word_view, null);
 			mWordContainer = root.findViewById(R.id.word);
 			mLoginContainer = root.findViewById(R.id.login);
 			mBlankContainer = root.findViewById(R.id.blank);
 			mAddButton = (Button) root.findViewById(R.id.add);
 			mAudioButton = (Button) root.findViewById(R.id.sound);
 			mLoginButton = (Button) root.findViewById(R.id.login_button);
+			mSwitchButton = (Button) root.findViewById(R.id.switch_button);
 			mAddButton.setOnClickListener(this);
 			mAddButton.setEnabled(false);
 			mAudioButton.setEnabled(false);
+			mSwitchButton.setEnabled(false);
 			mAudioButton.setOnClickListener(this);
 			mLoginButton.setOnClickListener(this);
+			mSwitchButton.setOnClickListener(this);
 
 			mDefinitionText = (TextView) root.findViewById(R.id.definition);
 			mPronText = (TextView) root.findViewById(R.id.pron);
@@ -296,12 +302,19 @@ public class ShanbayProvider extends Provider {
 				mDefinitionText.setText(mWordWrapper.mDefinition);
 				mAddButton.setEnabled(!mWordWrapper.isLearning());
 				mAudioButton.setEnabled(true);
+				mSwitchButton.setEnabled(true);
+				mSwitchButton.setText(R.string.en_definition);
+				mSwitchButtonState = false;
+
 			} else {
 				mContentText.setText("");
 				mPronText.setText("");
 				mDefinitionText.setText(R.string.notexist);
 				mAddButton.setEnabled(false);
 				mAudioButton.setEnabled(false);
+				mSwitchButton.setEnabled(false);
+				mSwitchButton.setText(R.string.en_definition);
+				mSwitchButtonState = false;
 			}
 
 		}
@@ -325,6 +338,16 @@ public class ShanbayProvider extends Provider {
 				Intent intent = new Intent(mContext, ShanbayLoginActivity.class);
 				ShanbayLoginActivity.sShanbayProvider = ShanbayProvider.this;
 				mContext.startActivity(intent);
+			} else if (v == mSwitchButton) {
+				if (true == mSwitchButtonState) {
+					mSwitchButtonState = false;
+					mDefinitionText.setText(mWordWrapper.mDefinition);
+					mSwitchButton.setText(R.string.en_definition);
+				} else {
+					mSwitchButtonState = true;
+					mDefinitionText.setText(mWordWrapper.mEnDefinition);
+					mSwitchButton.setText(R.string.definition);
+				}
 			}
 		}
 
