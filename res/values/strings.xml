@@ -14,4 +14,6 @@
     <string name="menu_set_clipboard_listener">Listen clipboard</string>
     <string name="menu_unbind_notification">Unbind Notification</string>
     <string name="menu_bind_notification">Bind Notification</string>
+    <string name="definition">Han</string>
+    <string name="en_definition">En</string>
 </resources>

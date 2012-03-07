@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">ShanBayQuery</string>
     <string name="query">查找</string>
     <string name="add">添加</string>
@@ -12,6 +13,8 @@
     <string name="notif_text_query_text_in_clipboard">触摸查询剪切板中的单词</string>
     <string name="menu_remove_clipboard_listener">不监听剪切板</string>
     <string name="menu_set_clipboard_listener">监听剪切板</string>
-        <string name="menu_unbind_notification">移除通知栏项</string>
+    <string name="menu_unbind_notification">移除通知栏项</string>
     <string name="menu_bind_notification">绑定到通知栏</string>
+    <string name="definition">汉义</string>
+    <string name="en_definition">英义</string>
 </resources>
