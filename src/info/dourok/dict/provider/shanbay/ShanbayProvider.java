@@ -54,7 +54,7 @@ public class ShanbayProvider extends Provider {
 		String psw = preferences.getString(KEY_PASSWORD, null);
 		Log.d(getClass().getCanonicalName(), "Username:" + mUsername + " psw:"
 				+ psw);
-		if (mUsername != null) {
+		if (mUsername != null) { 
 			mShanbayDict = new ShanbayDict(this);
 			mShanbayView.showBlankPanel();
 		} else {
@@ -200,6 +200,7 @@ public class ShanbayProvider extends Provider {
 	protected void onQuery(CharSequence chars) {
 		if (mShanbayDict != null)
 			mWordWrapper = mShanbayDict.query(chars.toString());
+		
 	}
 
 	@Override
@@ -256,8 +257,10 @@ public class ShanbayProvider extends Provider {
 		}
 
 		public void setWordWrapper(ShanbayDict.Word wordWrapper) {
-			// FIXME 登录失败的消息,比查词结束的消息先到,这样写应该没问题,但是最好还是设置个needLogin变量
-			if (root.getCurrentView() != mLoginContainer) {
+			// FIXME 登录失败的消息,比查词结束的消息先到,这样写应该没问题,还是设置个needLogin变量?
+			if(mShanbayDict==null){
+				showLoginPanel();
+			}else if (root.getCurrentView() != mLoginContainer) {
 				mWordWrapper = wordWrapper;
 				update();
 				showWordPanel();

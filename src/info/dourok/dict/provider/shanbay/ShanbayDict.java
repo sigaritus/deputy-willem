@@ -21,6 +21,7 @@ import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -84,13 +85,16 @@ public class ShanbayDict {
 	public ShanbayDict(ShanbayProvider shanbayProvider) {
 		this.mShanbayProvider = shanbayProvider;
 		mLocalContext = new BasicHttpContext();
+		
 		mLocalContext.setAttribute(ClientContext.COOKIE_STORE,
 				AppCookieStore.getInstance());
 	}
 
 	private HttpClient getClient() {
 		if (httpClient == null) {
+			
 			httpClient = AndroidHttpClient.newInstance(USER_AGENT);
+			HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),7000);
 		}
 		return httpClient;
 	}
@@ -314,7 +318,7 @@ public class ShanbayDict {
 			JSONException {
 		word = word.trim();
 		HttpGet getQuery = new HttpGet(API_QUERY + word);
-		// Log.d("query url",QUERY_URL + word);
+		 Log.d("query url",API_QUERY + word);
 		JSONObject json = getClient().execute(getQuery, responseHandler,
 				mLocalContext);
 		getQuery.abort();
