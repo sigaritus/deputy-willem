@@ -2,6 +2,8 @@ package info.dourok.dict.provider.shanbay;
 
 import android.content.Context;
 import android.os.Message;
+import android.util.Log;
+import info.dourok.dict.R;
 import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
 
@@ -11,8 +13,9 @@ public class ShanbayNoteProvider extends Provider {
 	
 	public ShanbayNoteProvider(ShanbayProvider shanbayProvider,Context context) {
 		super(context);
+		mUI = new MyView(context);
 		if(shanbayProvider==null){
-			throw new IllegalArgumentException("shanbayProvider is null");
+			throw new IllegalArgumentException("shanbayProvider can not be null");
 		}
 		mShanbayProvider = shanbayProvider;
 		
@@ -20,17 +23,16 @@ public class ShanbayNoteProvider extends Provider {
 
 	@Override
 	protected void onUpdate() {
-		// TODO Auto-generated method stub
 
+		mUI.show();
 	}
 
 	@Override
 	protected void onQuery(CharSequence chars) {
 		//
+		
 		mWordWrapper = mShanbayProvider.mWordWrapper;
 		
-		
-
 	}
 
 	@Override
@@ -42,13 +44,30 @@ public class ShanbayNoteProvider extends Provider {
 	@Override
 	public boolean filter(CharSequence chars) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public UI getUI() {
 		// TODO Auto-generated method stub
-		return null;
+		return mUI;
+	}
+	
+	MyView mUI;
+	class MyView extends CommUIImpl{
+
+		public MyView(Context context) {
+			super(context,R.layout.shanbay_note);
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public void busy() {
+			Log.d("NoteProvider","busy");
+			super.busy();
+		}
+		
+		
 	}
 
 }
