@@ -156,7 +156,12 @@ public class ListProvider extends Provider {
 		public long getItemId(int position) {
 			return mProviders.get(position).mMsgSpace;
 		}
-
+		@Override
+		public int getViewTypeCount() {
+			return 10000;
+		}
+		
+		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			return mProviders.get(position).getUI().getView();

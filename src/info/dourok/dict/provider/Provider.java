@@ -166,20 +166,26 @@ public abstract class Provider implements DictCommunication {
 		protected View mContentView;
 		ViewSwitcher mViewSwitcher;
 
-		public CommUIImpl(Context context) {
+		public CommUIImpl(Context context,int contentViewId) {
 			this.mContext = context;
+			LayoutInflater inflater = (LayoutInflater) mContext
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mViewSwitcher = (ViewSwitcher) inflater.inflate(
+					R.layout.provider_comm_ui, null);
+			mContentView =inflater.inflate(contentViewId, null);
+			mViewSwitcher.addView(mContentView);
 		}
 
 		/**
 		 * 只能在构造函数中调用 当初始化完 mContentView后,必须调用这个方法把它添加到ViewSwitcher中.
 		 */
-		protected void inflate() {
-			LayoutInflater inflater = (LayoutInflater) mContext
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mViewSwitcher = (ViewSwitcher) inflater.inflate(
-					R.layout.provider_comm_ui, null);
-			mViewSwitcher.addView(mContentView);
-		}
+//		protected void inflate() {
+//			LayoutInflater inflater = (LayoutInflater) mContext
+//					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//			mViewSwitcher = (ViewSwitcher) inflater.inflate(
+//					R.layout.provider_comm_ui, null);
+//			mViewSwitcher.addView(mContentView);
+//		}
 
 		@Override
 		public void busy() {

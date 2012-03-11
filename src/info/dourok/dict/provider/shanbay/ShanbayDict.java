@@ -431,7 +431,7 @@ public class ShanbayDict {
 				mDefinition = voc.getString("definition");
 				JSONObject en = voc.getJSONObject("en_definitions");
 				Iterator<?> itr = en.keys();
-				
+				mEnDefinition = "";
 				while (itr.hasNext()) {
 					String k = (String) itr.next();
 					mEnDefinition += k + " : ";
