@@ -51,9 +51,10 @@ public class ShanbayDict {
 			+ "/api/user/info/";
 	private final static String API_ADD_NOTE = "http://" + HOST
 			+ "/api/note/add/{{learning_id}}?note=";
+	private final static String API_GET_EXAMPLE = "http://"+HOST+"/api/learning/examples/";
 	private final static String USER_AGENT = "Mozilla/5.0 (X11; U; Linux "
 			+ "i686; en-US; rv:1.8.1.6) Gecko/20061201 Firefox/2.0.0.6 (Ubuntu-feisty)";
-
+	
 	/**
 	 * @deprecated
 	 */
@@ -371,7 +372,40 @@ public class ShanbayDict {
 			}
 		}
 	}
+	
+	public Examples getExample(int learnId){
+		try {
+			return getExample(learnId,false);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private Examples getExample(int learnId,boolean recall) throws IOException, JSONException{
+		
+		HttpGet getQuery = new HttpGet(API_GET_EXAMPLE+learnId);
 
+		JSONObject json = getClient().execute(getQuery, responseHandler,
+				mLocalContext);
+		getQuery.abort();
+		System.out.println(json);
+		if (json == null) {
+			if (!recall) {
+				if (login()) {
+					return getExample(learnId, true);
+				}
+			}
+		}else{
+			return new Examples(json);
+		}
+		return null;
+	}
+	
 	JSONResponseHandler responseHandler = new JSONResponseHandler();
 
 	final static class JSONResponseHandler implements
@@ -515,7 +549,7 @@ public class ShanbayDict {
 			mExamplesStatus = json.getInt("examples_status");
 			if (mExamplesStatus == 1) {
 				JSONArray array = json.getJSONArray("examples");
-				mExamples = new Example[array.length()];
+				mExamples = new Example[array.length()>2?array.length():2];
 				for (int i = 0; i < array.length(); i++) {
 					mExamples[i] = new Example(array.getJSONObject(i));
 				}

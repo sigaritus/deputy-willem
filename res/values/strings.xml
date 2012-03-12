@@ -16,7 +16,5 @@
     <string name="menu_bind_notification">Bind Notification</string>
     <string name="definition">Han</string>
     <string name="en_definition">En</string>
-    <string name="shanbay_example_template"> <![CDATA[
-	    %s<font color="#c5663e">%s</font>%s
-	    ]]></string> 
+	 <string name="shanbay_example_template">  a</string>
 </resources>

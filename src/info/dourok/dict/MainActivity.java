@@ -2,6 +2,7 @@ package info.dourok.dict;
 
 import info.dourok.dict.provider.ListProvider;
 import info.dourok.dict.provider.Provider;
+import info.dourok.dict.provider.shanbay.ShanbayNoteProvider;
 import info.dourok.dict.provider.shanbay.ShanbayProvider;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -58,8 +59,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		
 		Provider p= new ShanbayProvider(this);
 		mProvider.addProvider(p);
-//		p= new ShanbayProvider(this);
-//		mProvider.addProvider(p);
+		
+		
+		p= new ShanbayNoteProvider((ShanbayProvider)p, this);
+		mProvider.addProvider(p);
 //		p= new ShanbayProvider(this);
 //		mProvider.addProvider(p);
 //		p= new ShanbayProvider(this);

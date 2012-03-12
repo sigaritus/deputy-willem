@@ -25,7 +25,7 @@ import android.widget.ViewAnimator;
 
 public class ShanbayProvider extends Provider {
 
-	private ShanbayDict mShanbayDict;
+	ShanbayDict mShanbayDict;
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_PASSWORD = "passwrod";
 	private static final String KEY_STORE_PASSWORD = "store_password";
@@ -55,7 +55,7 @@ public class ShanbayProvider extends Provider {
 		String psw = preferences.getString(KEY_PASSWORD, null);
 		Log.d(getClass().getCanonicalName(), "Username:" + mUsername + " psw:"
 				+ psw);
-		if (mUsername != null) { 
+		if (mUsername != null) {
 			mShanbayDict = new ShanbayDict(this);
 			mShanbayView.showBlankPanel();
 		} else {
@@ -201,7 +201,7 @@ public class ShanbayProvider extends Provider {
 	protected void onQuery(CharSequence chars) {
 		if (mShanbayDict != null)
 			mWordWrapper = mShanbayDict.query(chars.toString());
-		
+
 	}
 
 	@Override
@@ -228,10 +228,8 @@ public class ShanbayProvider extends Provider {
 		private View mBlankContainer;
 
 		public ShanbayView(Context context) {
-			super(context);
-			LayoutInflater inflater = (LayoutInflater) mContext
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			root = (ViewAnimator) inflater.inflate(R.layout.sb_word_view, null);
+			super(context, R.layout.sb_word_view);
+			root = (ViewAnimator) mContentView;
 			mWordContainer = root.findViewById(R.id.word);
 			mLoginContainer = root.findViewById(R.id.login);
 			mBlankContainer = root.findViewById(R.id.blank);
@@ -253,20 +251,15 @@ public class ShanbayProvider extends Provider {
 
 			Typeface tf = Typeface.createFromAsset(context.getAssets(),
 					"fonts/segoeui.ttf");
-
 			mPronText.setTypeface(tf);
-
-			mContentView = root;
-			inflate();
-
 			showBlankPanel();
 		}
 
 		public void setWordWrapper(ShanbayDict.Word wordWrapper) {
 			// FIXME 登录失败的消息,比查词结束的消息先到,这样写应该没问题,还是设置个needLogin变量?
-			if(mShanbayDict==null){
+			if (mShanbayDict == null) {
 				showLoginPanel();
-			}else if (root.getCurrentView() != mLoginContainer) {
+			} else if (root.getCurrentView() != mLoginContainer) {
 				mWordWrapper = wordWrapper;
 				update();
 				showWordPanel();
