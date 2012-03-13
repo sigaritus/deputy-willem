@@ -4,6 +4,7 @@ import info.dourok.dict.MiscUtils;
 import info.dourok.dict.R;
 import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,8 +20,11 @@ import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 public class ShanbayProvider extends Provider {
@@ -235,14 +239,15 @@ public class ShanbayProvider extends Provider {
 			mBlankContainer = root.findViewById(R.id.blank);
 			mAddButton = (Button) root.findViewById(R.id.add);
 			mAudioButton = (Button) root.findViewById(R.id.sound);
-//			mLoginButton = (Button) root.findViewById(R.id.login_button);
+			// mLoginButton = (Button) root.findViewById(R.id.login_button);
 			mSwitchButton = (Button) root.findViewById(R.id.switch_button);
+			
 			mAddButton.setOnClickListener(this);
 			mAddButton.setEnabled(false);
 			mAudioButton.setEnabled(false);
 			mSwitchButton.setEnabled(false);
 			mAudioButton.setOnClickListener(this);
-			mLoginButton.setOnClickListener(this);
+
 			mSwitchButton.setOnClickListener(this);
 
 			mDefinitionText = (TextView) root.findViewById(R.id.definition);
@@ -266,7 +271,21 @@ public class ShanbayProvider extends Provider {
 			}
 		}
 
+		TextView mUserView;
+		TextView mPswView;
+		ProgressDialog dialog;
+
 		private void showLoginPanel() {
+			ViewStub stu = (ViewStub)root.findViewById(R.id.stub_login);
+			System.out.println(stu);
+			if (stu != null) {
+				View v = stu.inflate();
+				
+				mUserView = (EditText) v.findViewById(R.id.username);
+				mPswView = (EditText) v.findViewById(R.id.password);
+				mLoginButton = (Button) v.findViewById(R.id.login_button);
+				mLoginButton.setOnClickListener(this);
+			}
 			show();
 			if (root.getCurrentView() != mLoginContainer) {
 				root.setDisplayedChild(root.indexOfChild(mLoginContainer));
@@ -331,9 +350,15 @@ public class ShanbayProvider extends Provider {
 				msg.replyTo = mMessenger;
 				sendMessage(msg);
 			} else if (v == mLoginButton) {
-				Intent intent = new Intent(mContext, ShanbayLoginActivity.class);
-				ShanbayLoginActivity.sShanbayProvider = ShanbayProvider.this;
-				mContext.startActivity(intent);
+				if (dialog == null) {
+					dialog = new ProgressDialog(mContext);
+					dialog.setCancelable(false);
+					dialog.setMessage("Please wait...");
+				}
+				dialog.show();
+				String username = mUserView.getText().toString().trim();
+				String password = mPswView.getText().toString().trim();
+				sendLogin(username, password);
 			} else if (v == mSwitchButton) {
 				if (true == mSwitchButtonState) {
 					mSwitchButtonState = false;
@@ -356,13 +381,15 @@ public class ShanbayProvider extends Provider {
 					break;
 				case MSG_LOGIN_SUCCESS:
 					showBlankPanel();
-					if (mShanbayLoginActivity != null) {
-						mShanbayLoginActivity.onResultReceive(true);
+					if (true) {
+						dialog.dismiss();
+						Toast.makeText(mContext, "success", 3000).show();
 					}
 					break;
 				case MSG_LOGIN_FAILED:
-					if (mShanbayLoginActivity != null) {
-						mShanbayLoginActivity.onResultReceive(false);
+					if (true) {
+						dialog.dismiss();
+						Toast.makeText(mContext, "failed", 3000).show();
 					} else {
 						showLoginPanel();
 					}
