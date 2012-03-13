@@ -1,6 +1,6 @@
 package info.dourok.dict;
 
-import info.dourok.dict.provider.ListProvider;
+import info.dourok.dict.provider.ProviderList;
 import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayNoteProvider;
 import info.dourok.dict.provider.shanbay.ShanbayProvider;
@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
 	EditText mWordEditText;
 	Button mQueryButton;
-	ListProvider mProvider;
+	ShanbayProvider mProvider;
 	Provider.MessageObj mProviderMessageObj;
 	ClipboardAgency mClipboardAgency;
 	// public static PersistentCookieStore cookieStore;
@@ -55,14 +55,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		AppCookieStore.load(this);
 		mQueryButton = (Button) findViewById(R.id.query);
 		mQueryButton.setOnClickListener(this);
-		mProvider = new ListProvider(this);
+		mProvider = new ShanbayProvider(this);
 		
-		Provider p= new ShanbayProvider(this);
-		mProvider.addProvider(p);
-		
-		
-		p= new ShanbayNoteProvider((ShanbayProvider)p, this);
-		mProvider.addProvider(p);
+//		Provider p= new ShanbayProvider(this);
+//		mProvider.addProvider(p);
+//		
+//		
+//		p= new ShanbayNoteProvider((ShanbayProvider)p, this);
+//		mProvider.addProvider(p);
 //		p= new ShanbayProvider(this);
 //		mProvider.addProvider(p);
 //		p= new ShanbayProvider(this);

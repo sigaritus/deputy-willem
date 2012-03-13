@@ -6,7 +6,6 @@ import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
@@ -18,7 +17,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.text.Html;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -227,32 +225,30 @@ public class ShanbayProvider extends Provider {
 		boolean mSwitchButtonState; // false zh , true en
 
 		// private ShanbayDict.WordWrapper mWordWrapper;
-		private View mWordContainer;
-		private View mLoginContainer;
-		private View mBlankContainer;
+		private View mWordPanel;
+		private View mLoginPanel;
+		private View mBlankPanel;
 
 		public ShanbayView(Context context) {
 			super(context, R.layout.shanbay_word);
 			root = (ViewAnimator) mContentView;
-			mWordContainer = root.findViewById(R.id.word);
-			mLoginContainer = root.findViewById(R.id.login);
-			mBlankContainer = root.findViewById(R.id.blank);
-			mAddButton = (Button) root.findViewById(R.id.add);
-			mAudioButton = (Button) root.findViewById(R.id.sound);
-			// mLoginButton = (Button) root.findViewById(R.id.login_button);
-			mSwitchButton = (Button) root.findViewById(R.id.switch_button);
+			mWordPanel = root.findViewById(R.id.word);
+			mBlankPanel = root.findViewById(R.id.blank);
+			
+			mAddButton = (Button) mWordPanel.findViewById(R.id.add);
+			mAudioButton = (Button) mWordPanel.findViewById(R.id.sound);
+			mSwitchButton = (Button) mWordPanel.findViewById(R.id.switch_button);
 			
 			mAddButton.setOnClickListener(this);
 			mAddButton.setEnabled(false);
 			mAudioButton.setEnabled(false);
 			mSwitchButton.setEnabled(false);
 			mAudioButton.setOnClickListener(this);
-
 			mSwitchButton.setOnClickListener(this);
-
-			mDefinitionText = (TextView) root.findViewById(R.id.definition);
-			mPronText = (TextView) root.findViewById(R.id.pron);
-			mContentText = (TextView) root.findViewById(R.id.content);
+			
+			mDefinitionText = (TextView) mWordPanel.findViewById(R.id.definition);
+			mPronText = (TextView) mWordPanel.findViewById(R.id.pron);
+			mContentText = (TextView) mWordPanel.findViewById(R.id.content);
 
 			Typeface tf = Typeface.createFromAsset(context.getAssets(),
 					"fonts/segoeui.ttf");
@@ -264,7 +260,7 @@ public class ShanbayProvider extends Provider {
 			// FIXME 登录失败的消息,比查词结束的消息先到,这样写应该没问题,还是设置个needLogin变量?
 			if (mShanbayDict == null) {
 				showLoginPanel();
-			} else if (root.getCurrentView() != mLoginContainer) {
+			} else if (root.getCurrentView() != mLoginPanel) {
 				mWordWrapper = wordWrapper;
 				update();
 				showWordPanel();
@@ -276,35 +272,32 @@ public class ShanbayProvider extends Provider {
 		ProgressDialog dialog;
 
 		private void showLoginPanel() {
-			ViewStub stu = (ViewStub)root.findViewById(R.id.stub_login);
-			System.out.println(stu);
-			if (stu != null) {
-				View v = stu.inflate();
-				
-				mUserView = (EditText) v.findViewById(R.id.username);
-				mPswView = (EditText) v.findViewById(R.id.password);
-				mLoginButton = (Button) v.findViewById(R.id.login_button);
+			ViewStub stub = (ViewStub)root.findViewById(R.id.stub_login);
+			if (stub != null) {
+				mLoginPanel = stub.inflate();
+				mUserView = (EditText) mLoginPanel.findViewById(R.id.username);
+				mPswView = (EditText) mLoginPanel.findViewById(R.id.password);
+				mLoginButton = (Button) mLoginPanel.findViewById(R.id.login_button);
 				mLoginButton.setOnClickListener(this);
 			}
 			show();
-			if (root.getCurrentView() != mLoginContainer) {
-				root.setDisplayedChild(root.indexOfChild(mLoginContainer));
 
-			}
+			root.setDisplayedChild(root.indexOfChild(mLoginPanel));
+			Log.d("showLoginPanel","inflate :"+mLoginPanel.getWidth()+" "+mLoginPanel.getHeight()+(root.getCurrentView()==mLoginPanel));
 		}
 
 		private void showWordPanel() {
 			show();
-			if (root.getCurrentView() != mWordContainer) {
-				root.setDisplayedChild(root.indexOfChild(mWordContainer));
+			if (root.getCurrentView() != mWordPanel) {
+				root.setDisplayedChild(root.indexOfChild(mWordPanel));
 
 			}
 		}
 
 		private void showBlankPanel() {
 			show();
-			if (root.getCurrentView() != mBlankContainer) {
-				root.setDisplayedChild(root.indexOfChild(mBlankContainer));
+			if (root.getCurrentView() != mBlankPanel) {
+				root.setDisplayedChild(root.indexOfChild(mBlankPanel));
 			}
 		}
 
