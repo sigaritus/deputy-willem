@@ -228,14 +228,14 @@ public class ShanbayProvider extends Provider {
 		private View mBlankContainer;
 
 		public ShanbayView(Context context) {
-			super(context, R.layout.sb_word_view);
+			super(context, R.layout.shanbay_word);
 			root = (ViewAnimator) mContentView;
 			mWordContainer = root.findViewById(R.id.word);
 			mLoginContainer = root.findViewById(R.id.login);
 			mBlankContainer = root.findViewById(R.id.blank);
 			mAddButton = (Button) root.findViewById(R.id.add);
 			mAudioButton = (Button) root.findViewById(R.id.sound);
-			mLoginButton = (Button) root.findViewById(R.id.login_button);
+//			mLoginButton = (Button) root.findViewById(R.id.login_button);
 			mSwitchButton = (Button) root.findViewById(R.id.switch_button);
 			mAddButton.setOnClickListener(this);
 			mAddButton.setEnabled(false);
