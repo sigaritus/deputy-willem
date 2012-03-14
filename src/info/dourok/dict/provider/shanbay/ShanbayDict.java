@@ -94,7 +94,6 @@ public class ShanbayDict {
 
 	private HttpClient getClient() {
 		if (httpClient == null) {
-			
 			httpClient = AndroidHttpClient.newInstance(USER_AGENT);
 			HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),7000);
 		}
@@ -357,13 +356,14 @@ public class ShanbayDict {
 	private void addNote(Word word, String note, boolean recall)
 			throws IOException {
 		note = note.trim();
-		HttpGet getQuery = new HttpGet(API_QUERY.replace("{{learning_id}}",
+		HttpGet getQuery = new HttpGet(API_ADD_NOTE.replace("{{learning_id}}",
 				Integer.toString(word.mLearningId)).concat(note));
 
 		JSONObject json = getClient().execute(getQuery, responseHandler,
 				mLocalContext);
-		getQuery.abort();
 
+		getQuery.abort();
+		
 		if (json == null) {
 			if (!recall) {
 				if (login()) {
@@ -371,6 +371,7 @@ public class ShanbayDict {
 				}
 			}
 		}
+		Log.d(getClass().getName(), json+"");
 	}
 	
 	public Examples getExample(int learnId){
@@ -427,6 +428,7 @@ public class ShanbayDict {
 	}
 
 	public void destory() {
+		Log.d(getClass().getName(),"destory");
 		if (httpClient != null)
 			httpClient.close();
 	}

@@ -1,15 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package info.dourok.dict;
 
 import android.os.Looper;
 
-/**
- *
- * @author DouO
- */
+
 public class Worker implements Runnable {
 
         private final Object mLock = new Object();

@@ -46,7 +46,8 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp"
                 android:text="@string/add"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/sound"
@@ -56,7 +57,8 @@
                 android:contentDescription="@string/audio"
                 android:padding="16dp"
                 android:text="@string/audio"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/switch_button"
@@ -66,25 +68,28 @@
                 android:contentDescription="@string/audio"
                 android:padding="16dp"
                 android:text="@string/definition"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/example"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:contentDescription="Exs"
                 android:padding="16dp"
-                android:text="@string/audio"
-                android:textSize="20sp" />
+                android:text="Exs"
+                android:textSize="20sp"
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:contentDescription="Note"
                 android:padding="16dp"
-                android:text="@string/audio"
-                android:textSize="20sp" />
+                android:text="Note"
+                android:textSize="20sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -94,10 +99,21 @@
         android:layout_height="wrap_content"
         android:layout="@layout/shanbay_login" />
 
+    <ViewStub
+        android:id="@+id/stub_example"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout="@layout/shanbay_example" />
+
+    <ViewStub
+        android:id="@+id/stub_note"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout="@layout/shanbay_note" />
+
     <TextView
         android:id="@+id/blank"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 
 </ViewAnimator>
