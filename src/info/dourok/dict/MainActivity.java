@@ -1,8 +1,6 @@
 package info.dourok.dict;
 
-import info.dourok.dict.provider.ProviderList;
 import info.dourok.dict.provider.Provider;
-import info.dourok.dict.provider.shanbay.ShanbayNoteProvider;
 import info.dourok.dict.provider.shanbay.ShanbayProvider;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,18 +28,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 public class MainActivity extends Activity implements View.OnClickListener,
 		DictCommunication {
 
 	EditText mWordEditText;
-	Button mQueryButton;
+	// Button mQueryButton;
+
+	// ProviderList mProvider;
 	ShanbayProvider mProvider;
 	Provider.MessageObj mProviderMessageObj;
 	ClipboardAgency mClipboardAgency;
+
 	// public static PersistentCookieStore cookieStore;
 	/**
 	 * Called when the activity is first created.
@@ -53,25 +55,40 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		mClipboardAgency = ClipboardAgency.getClipboardAgency(this);
 		setContentView(R.layout.main);
 		AppCookieStore.load(this);
-		mQueryButton = (Button) findViewById(R.id.query);
-		mQueryButton.setOnClickListener(this);
+		// 不再需要查询键,使用Ime按键代替
+		// mQueryButton = (Button) findViewById(R.id.query);
+		// mQueryButton.setOnClickListener(this);
+
 		mProvider = new ShanbayProvider(this);
-		
-//		Provider p= new ShanbayProvider(this);
-//		mProvider.addProvider(p);
-//		
-//		
-//		p= new ShanbayNoteProvider((ShanbayProvider)p, this);
-//		mProvider.addProvider(p);
-//		p= new ShanbayProvider(this);
-//		mProvider.addProvider(p);
-//		p= new ShanbayProvider(this);
-//		mProvider.addProvider(p);
-//		p= new ShanbayProvider(this);
-//		mProvider.addProvider(p);
-		
+		// mProvider = new ProviderList(this);
+		// Provider p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+		// p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+		// p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+		// p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+		//
+		// p= new ShanbayNoteProvider((ShanbayProvider)p, this);
+		// mProvider.addProvider(p);
+		// p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+		// p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+		// p= new ShanbayProvider(this);
+		// mProvider.addProvider(p);
+
 		LinearLayout container = (LinearLayout) findViewById(R.id.word_container);
-		container.addView(mProvider.getUI().getView());
+
+		ScrollView sv = new ScrollView(this);
+		sv.addView(mProvider.getUI().getView());
+		container.addView(sv, new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT));
+
+		// container.addView(mProvider.getUI().getView(),new LayoutParams(
+		// LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
 		mProviderMessageObj = new Provider.MessageObj();
 		mProviderMessageObj.provider = mProvider;
 		// mWordView = new ShanbayView(this);
@@ -128,7 +145,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN)
 						&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					onClick(mQueryButton);
+					query();
 					return true;
 				}
 				return false;
@@ -171,7 +188,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		switch (item.getItemId()) {
 		case MENU_UNBIND:
 			Message msg;
@@ -186,7 +203,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		case MENU_CLIPBOARD:
 
 			msg = Message.obtain(null,
-					mClipboardAgency.isBinding()? MSG_UNBIND_CLIPBOARD
+					mClipboardAgency.isBinding() ? MSG_UNBIND_CLIPBOARD
 							: MSG_BIND_CLIPBOARD);
 			try {
 				mService.send(msg);
@@ -206,6 +223,18 @@ public class MainActivity extends Activity implements View.OnClickListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			break;
+		case MENU_SHANBAY_LOGOUT:
+			new AlertDialog.Builder(this).setTitle("确认登出扇贝网?")
+				.setPositiveButton(getString(android.R.string.yes), new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						mProvider.logout();
+					}
+				})
+				.setNegativeButton(getString(android.R.string.cancel), null).show();
+			
 			break;
 		default:
 			break;
@@ -233,15 +262,16 @@ public class MainActivity extends Activity implements View.OnClickListener,
 	private final static int MENU_UNBIND = 2;
 	private final static int MENU_CLIPBOARD = 3;
 	private final static int MENU_NOTIFICATION = 4;
+	private final static int MENU_SHANBAY_LOGOUT = 5;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
 		// menu.add(Menu.NONE, MENU_UNBIND, Menu.NONE, "UNBIND Server");
 		if (ClipboardAgency.hasNewClipboard) {
 			menu.add(Menu.NONE, MENU_CLIPBOARD, Menu.NONE, "");
 		}
 		menu.add(Menu.NONE, MENU_NOTIFICATION, Menu.NONE, "");
+		menu.add(Menu.NONE, MENU_SHANBAY_LOGOUT, Menu.NONE, "登出扇贝");
 		return true;
 	}
 
@@ -265,40 +295,48 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		if (DictService.ACTION_QUERY_CLIPBOARD.equals(intent.getAction())) {
 			queryClipBoardText();
 			super.onNewIntent(intent);
-		} else if(DictService.ACTION_CANCEL_BINDING_CLIPBOARD.equals(intent.getAction())){
+		} else if (DictService.ACTION_CANCEL_BINDING_CLIPBOARD.equals(intent
+				.getAction())) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("remove clipboard listener?").setPositiveButton("Yes", new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-					Message msg = Message.obtain(null, MSG_UNBIND_CLIPBOARD);
-					try {
-						mService.send(msg);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			}
-		}).setNegativeButton("No", null).show();
+			builder.setMessage("remove clipboard listener?")
+					.setPositiveButton("Yes", new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+							Message msg = Message.obtain(null,
+									MSG_UNBIND_CLIPBOARD);
+							try {
+								mService.send(msg);
+							} catch (RemoteException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}).setNegativeButton("No", null).show();
 		}
 	}
 
+	private void query(){
+		// mWordView.busy(true); // FIXME 通知所有Provider 准备
+		String w = mWordEditText.getText().toString();
+		mProviderMessageObj.obj = w;
+					Message msg = Message.obtain(null, MSG_QUERY, mProviderMessageObj);
+					// msg.replyTo = mMessenger;
+					try {
+						mProvider.getUI().busy();
+						mService.send(msg);
+						
+					} catch (RemoteException ex) {
+						Log.w("Send MSG_QUERY_WORD", ex);
+					}
+	}
+	
 	@Override
 	public void onClick(View v) {
-		if (v == mQueryButton) {
-			// mWordView.busy(true); // FIXME 通知所有Provider 准备
-			String w = mWordEditText.getText().toString();
-			mProviderMessageObj.obj = w;
-			Message msg = Message.obtain(null, MSG_QUERY, mProviderMessageObj);
-			// msg.replyTo = mMessenger;
-			try {
-				mProvider.getUI().busy();
-				mService.send(msg);
-				
-			} catch (RemoteException ex) {
-				Log.w("Send MSG_QUERY_WORD", ex);
-			}
-		}
+//		if (v == mQueryButton) {
+//			query();
+//			}
+//		}
 	}
 
 	Messenger mService = null;
@@ -355,7 +393,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 			if (c != null && c.length() < 25 && MiscUtils.isAcsii(c)) {
 				c.length();
 				mWordEditText.setText(c);
-				onClick(mQueryButton);
+				query();
 			}
 		}
 	}
@@ -370,5 +408,4 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		unbindService(mConnection);
 	}
 
-	
 }

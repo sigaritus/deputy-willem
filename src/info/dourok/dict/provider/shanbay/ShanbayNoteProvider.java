@@ -66,9 +66,9 @@ public class ShanbayNoteProvider extends Provider {
 
 	class MyView extends CommUIImpl {
 		TextView mExample1;
-		TextView mExampleZh1;
+
 		TextView mExample2;
-		TextView mExampleZh2;
+
 		ViewSwitcher root;
 
 		public MyView(Context context) {
@@ -76,8 +76,7 @@ public class ShanbayNoteProvider extends Provider {
 			root = (ViewSwitcher) mContentView;
 			mExample1 = (TextView) root.findViewById(R.id.example_1);
 			mExample2 = (TextView) root.findViewById(R.id.example_2);
-			mExampleZh1 = (TextView) root.findViewById(R.id.example_zh_1);
-			mExampleZh2 = (TextView) root.findViewById(R.id.example_zh_2);
+
 		}
 
 		public void update(Examples ex) {
@@ -86,11 +85,11 @@ public class ShanbayNoteProvider extends Provider {
 				Example e2 = ex.mExamples[1];
 				if (e1 != null) {
 					mExample1.setText(e1.mFirst + e1.mMid + e1.mLast);
-					mExampleZh1.setText(e1.mTranslation);
+
 				}
 				if (e2 != null) {
 					mExample2.setText(e2.mFirst + e2.mMid + e2.mLast);
-					mExampleZh2.setText(e2.mTranslation);
+
 				}
 			}
 		}

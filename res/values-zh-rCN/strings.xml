@@ -17,4 +17,13 @@
     <string name="menu_bind_notification">绑定到通知栏</string>
     <string name="definition">汉义</string>
     <string name="en_definition">英义</string>
+    <string name="shanbay_example">例句</string>
+    <string name="shanbay_note">笔记</string>
+        <string name="post">提交</string>
+    <string name="back">返回</string>
+        <string name="login">登录</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="shanbay_note_hint">请输入少于300字的笔记</string>
+
 </resources>

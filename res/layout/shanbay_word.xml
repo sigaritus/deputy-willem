@@ -27,6 +27,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom" />
+
+            <Button
+                android:id="@+id/sound"
+                style="@style/DictButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:contentDescription="@string/audio"
+                android:text="@string/audio"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
@@ -42,53 +52,38 @@
 
             <Button
                 android:id="@+id/add"
+                style="@style/DictButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:layout_marginRight="16dp"
                 android:text="@string/add"
-                android:textSize="20sp"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/sound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:contentDescription="@string/audio"
-                android:padding="16dp"
-                android:text="@string/audio"
-                android:textSize="20sp"
                 android:visibility="gone" />
 
             <Button
                 android:id="@+id/switch_button"
+                style="@style/DictButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:contentDescription="@string/audio"
-                android:padding="16dp"
+                android:layout_marginRight="16dp"
                 android:text="@string/definition"
-                android:textSize="20sp"
                 android:visibility="gone" />
 
             <Button
                 android:id="@+id/example"
+                style="@style/DictButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:padding="16dp"
-                android:text="Exs"
-                android:textSize="20sp"
+                android:layout_marginRight="16dp"
+                android:text="@string/shanbay_example"
                 android:visibility="gone" />
 
             <Button
                 android:id="@+id/note"
+                style="@style/DictButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:padding="16dp"
-                android:text="Note"
-                android:textSize="20sp"
+                android:layout_marginRight="16dp"
+                android:text="@string/shanbay_note"
                 android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
@@ -113,6 +108,7 @@
 
     <TextView
         android:id="@+id/blank"
+        android:textSize="32dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

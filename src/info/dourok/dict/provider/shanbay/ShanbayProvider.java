@@ -1,11 +1,14 @@
 package info.dourok.dict.provider.shanbay;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import info.dourok.dict.MiscUtils;
 import info.dourok.dict.R;
 import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Examples;
-import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Examples.Example;
+import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,7 +35,9 @@ public class ShanbayProvider extends Provider {
 	ShanbayDict mShanbayDict;
 	private static final String KEY_USERNAME = "username";
 	private static final String KEY_PASSWORD = "passwrod";
+	private static final String KEY_NICKNAME = "nickname";
 	private static final String KEY_STORE_PASSWORD = "store_password";
+
 	private final static int MSG_ADD_WORD = MSG_MIN_VALUE + 1;
 	private final static int MSG_LOADING_AUDIO = MSG_MIN_VALUE + 2;
 	private final static int MSG_ADD_WORD_FINISHED = MSG_MIN_VALUE + 3;
@@ -43,7 +48,10 @@ public class ShanbayProvider extends Provider {
 	private final static int MSG_GET_EXAMPLE_FINISHED = MSG_MIN_VALUE + 8;
 	private final static int MSG_ADD_NOTE = MSG_MIN_VALUE + 9;
 	private final static int MSG_ADD_NOTE_FINISHED = MSG_MIN_VALUE + 10;
+	private final static int MSG_AUTO_LOGIN_FAILED = MSG_MIN_VALUE + 11;
+
 	String mUsername;
+	String mNickname;
 
 	Word mWordWrapper;
 	ShanbayLoginActivity mShanbayLoginActivity;
@@ -59,6 +67,7 @@ public class ShanbayProvider extends Provider {
 		// 读取用户名, 有值表示之前登录过,那么假设现在也在登录状态中
 		// 因为sessionID被保存起来了. 一旦session ID 过期, Dict 会再次请求登录.
 		mUsername = preferences.getString(KEY_USERNAME, null);
+		mNickname = preferences.getString(KEY_NICKNAME, null);
 		String psw = preferences.getString(KEY_PASSWORD, null);
 		Log.d(getClass().getCanonicalName(), "Username:" + mUsername + " psw:"
 				+ psw);
@@ -69,11 +78,28 @@ public class ShanbayProvider extends Provider {
 			mShanbayView.mLoginPanel.showPanel();
 		}
 	}
-
-	void saveUser(String usr, String psw) {
+	
+	//FIXME 不应该提供公共方法
+	public void logout(){
+		if(mShanbayDict!=null){
+			mShanbayDict.logout();
+		}
+		mUsername = null;
+		mNickname = null;		
 		Editor editor = getSharedPreferences().edit();
+		editor.remove(KEY_USERNAME);
+		editor.remove(KEY_PASSWORD);
+		editor.remove(KEY_NICKNAME);
+		editor.commit();
+	}
+
+	void saveUser(String usr, String psw, String nick) {
+		Editor editor = getSharedPreferences().edit();
+		mUsername = usr;
+		mNickname = nick;
 		editor.putString(KEY_USERNAME, usr);
 		editor.putString(KEY_PASSWORD, psw);
+		editor.putString(KEY_NICKNAME, nick);
 		editor.commit();
 	}
 
@@ -86,6 +112,7 @@ public class ShanbayProvider extends Provider {
 	}
 
 	String pswRequest() {
+		Log.d(getClass().getName(),"pswRequest");
 		SharedPreferences preferences = getSharedPreferences();
 		boolean hasPsw = preferences.getBoolean(KEY_STORE_PASSWORD, true);
 		if (hasPsw) {
@@ -96,10 +123,13 @@ public class ShanbayProvider extends Provider {
 		}
 	}
 
-	void needLogin() {
+	boolean needLogin;
+
+	void loginRequest() {
 		try {
-			mShanbayView.mMessenger
-					.send(Message.obtain(null, MSG_LOGIN_FAILED));
+			needLogin = true;
+			mShanbayView.mMessenger.send(Message.obtain(null,
+					MSG_AUTO_LOGIN_FAILED));
 		} catch (RemoteException e) {
 			Log.w(getName(), e);
 		}
@@ -161,23 +191,19 @@ public class ShanbayProvider extends Provider {
 
 	}
 
-	// TODO 缓存当前单词的音频
 	private void playAudio(Word wordWrapper) {
 		Uri uri = Uri.parse(wordWrapper.mAudioUrl);
 		if (uri == null) {
 			return;
 		}
-		if (mp != null) {
-			if (mp.isPlaying()) {
-				mp.stop();
-				mp.reset();
-			}
-			mp.release();
-		}
-		try {
-			mp = MediaPlayer.create(mContext, uri);
-			mp.start();
 
+		try {
+			if (mp == null) {
+				mp = MediaPlayer.create(mContext, uri);
+				mp.start();
+			} else if (!mp.isPlaying()) {
+				mp.start();
+			}
 		} catch (Exception ex) {
 			Log.w("Media", ex);
 		}
@@ -187,6 +213,14 @@ public class ShanbayProvider extends Provider {
 
 	@Override
 	protected void onQuery(CharSequence chars) {
+		if (mp != null) {
+			if (mp.isPlaying()) {
+				mp.stop();
+				mp.reset();
+			}
+			mp.release();
+			mp = null;
+		}
 		if (mShanbayDict != null)
 			mWordWrapper = mShanbayDict.query(chars.toString());
 
@@ -196,9 +230,9 @@ public class ShanbayProvider extends Provider {
 	protected void onUpdate() {
 		mShanbayView.setWordWrapper(mWordWrapper);
 	}
+	
 
 	class ShanbayView extends CommUIImpl implements View.OnClickListener {
-
 		private ViewAnimator root;
 		TextView mDefinitionText;
 		TextView mPronText;
@@ -214,13 +248,13 @@ public class ShanbayProvider extends Provider {
 
 		// private ShanbayDict.WordWrapper mWordWrapper;
 		private View mWordPanel;
-		private View mBlankPanel;
+		private TextView mBlankPanel;
 
 		public ShanbayView(Context context) {
 			super(context, R.layout.shanbay_word);
 			root = (ViewAnimator) mContentView;
 			mWordPanel = root.findViewById(R.id.word);
-			mBlankPanel = root.findViewById(R.id.blank);
+			mBlankPanel = (TextView) root.findViewById(R.id.blank);
 
 			mAddButton = (Button) mWordPanel.findViewById(R.id.add);
 			mAudioButton = (Button) mWordPanel.findViewById(R.id.sound);
@@ -246,10 +280,10 @@ public class ShanbayProvider extends Provider {
 		}
 
 		public void setWordWrapper(ShanbayDict.Word wordWrapper) {
-			// FIXME 登录失败的消息,比查词结束的消息先到,这样写应该没问题,还是设置个needLogin变量?
+			// 登录失败的消息,比查词结束的消息先到
 			if (mShanbayDict == null) {
 				mShanbayView.mLoginPanel.showPanel();
-			} else if (mLoginPanel.mPanelView!=null) { //FIXME
+			} else if (!needLogin) { // FIXME
 				mWordWrapper = wordWrapper;
 				mExamplePanel.reset();
 				mNotePanel.reset();
@@ -268,6 +302,8 @@ public class ShanbayProvider extends Provider {
 
 		private void showBlankPanel() {
 			show();
+			mBlankPanel.setText(Html.fromHtml(
+					String.format(mContext.getString(R.string.shanbay_welcome_template, mNickname))));
 			if (root.getCurrentView() != mBlankPanel) {
 				root.setDisplayedChild(root.indexOfChild(mBlankPanel));
 			}
@@ -360,6 +396,7 @@ public class ShanbayProvider extends Provider {
 					break;
 				case MSG_LOGIN_SUCCESS:
 				case MSG_LOGIN_FAILED:
+				case MSG_AUTO_LOGIN_FAILED:
 					mLoginPanel.handleFgMsg(msg);
 					break;
 				}
@@ -399,14 +436,10 @@ public class ShanbayProvider extends Provider {
 
 			@Override
 			void update() {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			void reset() {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
@@ -417,21 +450,32 @@ public class ShanbayProvider extends Provider {
 					String usr = ss[0];
 					String psw = ss[1];
 					Log.d(getName(), "handle login:" + usr);
-					boolean result = false;
+					JSONObject userInfo = null;
 					if (usr != null && psw != null) {
 						if (mShanbayDict == null) {
 							mShanbayDict = new ShanbayDict(ShanbayProvider.this);
 						}
-						mUsername = usr;
-						result = mShanbayDict.login(psw);
-						if (result) {
-							saveUser(usr, psw);
-							msg.replyTo.send(Message.obtain(null,
-									MSG_LOGIN_SUCCESS));
-						} else {
-							msg.replyTo.send(Message.obtain(null,
-									MSG_LOGIN_FAILED));
+						userInfo = mShanbayDict.loginAndGetUserInfo(usr,
+								psw);
+						if (userInfo != null) {
+							int r;
+							try {
+								r = userInfo.getInt("result");
+								if (r == 1) {
+									saveUser(usr, psw,
+											userInfo.getString("nickname"));
+									msg.replyTo.send(Message.obtain(null,
+											MSG_LOGIN_SUCCESS));
+									return;
+								}
+							} catch (JSONException e) {
+								
+								e.printStackTrace();
+							}
 						}
+						msg.replyTo
+								.send(Message.obtain(null, MSG_LOGIN_FAILED));
+
 					}
 
 				} catch (RemoteException ex) {
@@ -444,6 +488,7 @@ public class ShanbayProvider extends Provider {
 			void handleFgMsg(Message msg) {
 				switch (msg.what) {
 				case MSG_LOGIN_SUCCESS:
+					needLogin = false;
 					showBlankPanel();
 					if (true) {
 						mDialog.dismiss();
@@ -451,12 +496,11 @@ public class ShanbayProvider extends Provider {
 					}
 					break;
 				case MSG_LOGIN_FAILED:
-					if (true) {
-						mDialog.dismiss();
-						Toast.makeText(mContext, "failed", 3000).show();
-					} else {
-						showPanel();
-					}
+					mDialog.dismiss();
+					Toast.makeText(mContext, "failed", 3000).show();
+					break;
+				case MSG_AUTO_LOGIN_FAILED:
+					showPanel();
 					break;
 				}
 			}
@@ -529,18 +573,32 @@ public class ShanbayProvider extends Provider {
 				Provider.MessageObj obj = (Provider.MessageObj) msg.obj;
 				Word word = (Word) obj.obj;
 				String note = mNoteInput.getText().toString();
-				mShanbayDict.addNote(word, note);
 				try {
-					msg.replyTo.send(Message.obtain(null,
-							MSG_ADD_NOTE_FINISHED, word));
-				} catch (RemoteException ex) {
-					Log.w("MSG_ADD_WORD", ex);
+					mShanbayDict.addNote(word, note);
+					Toast.makeText(mContext, "添加成功:", 5000);
+					try {
+						msg.replyTo.send(Message.obtain(null,
+								MSG_ADD_NOTE_FINISHED, Boolean.TRUE));
+					} catch (RemoteException ex) {
+						Log.w("MSG_ADD_NOTE", ex);
+					}
+				} catch (ShanbayException e) {
+					Toast.makeText(mContext, "添加失败:" + e.getMessage(), 5000);
+					try {
+						msg.replyTo.send(Message.obtain(null,
+								MSG_ADD_NOTE_FINISHED, Boolean.FALSE));
+					} catch (RemoteException ex) {
+						Log.w("MSG_ADD_NOTE", ex);
+					}
+					return;
 				}
 			}
 
 			@Override
 			void handleFgMsg(Message msg) {
-				update();
+				if ((Boolean) msg.obj) {
+					update();
+				}
 				showPanel();
 			}
 
@@ -575,27 +633,28 @@ public class ShanbayProvider extends Provider {
 
 		ExamplePanel mExamplePanel = new ExamplePanel();
 
-		class ExamplePanel extends Panel {
+		class ExamplePanel extends Panel implements View.OnClickListener {
 			TextView mExample1;
-			TextView mExampleZh1;
 			TextView mExample2;
-			TextView mExampleZh2;
 			Examples mExamples;
 			Button mBackButton;
 			View mPanelView;
+			String mTemplate;
+			boolean mShowTranslation1;
+			boolean mShowTranslation2;
 
 			@Override
 			public void init() {
 				ViewStub stub = (ViewStub) root.findViewById(R.id.stub_example);
 				mPanelView = stub.inflate();
 				mExample1 = (TextView) mPanelView.findViewById(R.id.example_1);
+				mExample1.setOnClickListener(this);
 				mExample2 = (TextView) mPanelView.findViewById(R.id.example_2);
-				mExampleZh1 = (TextView) mPanelView
-						.findViewById(R.id.example_zh_1);
-				mExampleZh2 = (TextView) mPanelView
-						.findViewById(R.id.example_zh_2);
+				mExample2.setOnClickListener(this);
 				mBackButton = (Button) mPanelView.findViewById(R.id.back);
 				mBackButton.setOnClickListener(mShanbayView);
+				mTemplate = mContext.getResources().getString(
+						R.string.shanbay_example_template);
 			}
 
 			@Override
@@ -608,18 +667,28 @@ public class ShanbayProvider extends Provider {
 
 			@Override
 			void update() {
+
 				if (mPanelView == null)
 					init();
 				if (mExamples != null) {
+					assert (mExamples.mExamples.length == 2);
 					Example e1 = mExamples.mExamples[0];
 					Example e2 = mExamples.mExamples[1];
 					if (e1 != null) {
-						mExample1.setText(e1.mFirst + e1.mMid + e1.mLast);
-						mExampleZh1.setText(e1.mTranslation);
+						String spanned = String.format(mTemplate, e1.mFirst,
+								e1.mMid, e1.mLast,
+								mShowTranslation1 ? e1.mTranslation : "");
+						mExample1.setText(Html.fromHtml(spanned));
+					} else {
+						mExample1.setVisibility(View.GONE);
 					}
 					if (e2 != null) {
-						mExample2.setText(e2.mFirst + e2.mMid + e2.mLast);
-						mExampleZh2.setText(e2.mTranslation);
+						String spanned = String.format(mTemplate, e2.mFirst,
+								e2.mMid, e2.mLast,
+								mShowTranslation2 ? e2.mTranslation : "");
+						mExample2.setText(Html.fromHtml(spanned));
+					} else {
+						mExample2.setVisibility(View.GONE);
 					}
 				}
 			}
@@ -628,6 +697,10 @@ public class ShanbayProvider extends Provider {
 			public void reset() {
 				if (mPanelView != null) {
 					mExamples = null;
+					mExample1.setVisibility(View.VISIBLE);
+					mShowTranslation1 = false;
+					mExample2.setVisibility(View.VISIBLE);
+					mShowTranslation2 = false;
 				}
 			}
 
@@ -640,7 +713,7 @@ public class ShanbayProvider extends Provider {
 					msg.replyTo.send(Message.obtain(null,
 							MSG_GET_EXAMPLE_FINISHED, exs));
 				} catch (RemoteException ex) {
-					Log.w("MSG_ADD_WORD", ex);
+					Log.w("MSG_GET_EXAMPL", ex);
 				}
 			}
 
@@ -674,6 +747,17 @@ public class ShanbayProvider extends Provider {
 				return false;
 			}
 
+			@Override
+			public void onClick(View v) {
+				if (v == mExample1) {
+					mShowTranslation1 = !mShowTranslation1;
+					update();
+				} else if (v == mExample2) {
+					mShowTranslation2 = !mShowTranslation2;
+					update();
+				}
+
+			}
 		}
 
 		abstract class Panel {

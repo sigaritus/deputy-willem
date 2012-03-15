@@ -8,7 +8,8 @@
     <EditText
         android:id="@+id/note_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:hint="@string/shanbay_note_hint"
         android:minLines="3"
         android:inputType="textMultiLine" >
 
@@ -21,15 +22,19 @@
 
         <Button
             android:id="@+id/comfirm"
+            style="@style/DictButton"
+            android:layout_marginRight="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Post" />
+            android:text="@string/post" />
 
         <Button
             android:id="@+id/cancel"
+            style="@style/DictButton"
+            android:layout_marginRight="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back" />
+            android:text="@string/back" />
     </LinearLayout>
 
 </LinearLayout>

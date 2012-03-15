@@ -10,6 +10,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
@@ -117,7 +118,6 @@ public class ProviderList extends Provider {
 			mProviderAdapter.notifyDataSetChanged();
 		}
 
-
 		@Override
 		public View getView() {
 			return mListView;
@@ -156,12 +156,12 @@ public class ProviderList extends Provider {
 		public long getItemId(int position) {
 			return mProviders.get(position).mMsgSpace;
 		}
+
 		@Override
 		public int getViewTypeCount() {
 			return 10000;
 		}
-		
-		
+
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			return mProviders.get(position).getUI().getView();
