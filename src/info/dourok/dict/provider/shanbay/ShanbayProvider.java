@@ -14,7 +14,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +26,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -50,7 +53,7 @@ public class ShanbayProvider extends Provider {
 	private final static int MSG_ADD_NOTE = MSG_MIN_VALUE + 9;
 	private final static int MSG_ADD_NOTE_FINISHED = MSG_MIN_VALUE + 10;
 	private final static int MSG_AUTO_LOGIN_FAILED = MSG_MIN_VALUE + 11;
-
+	private final static int MSG_PLAY_AUDIO_FINISHED = MSG_MIN_VALUE + 12;
 	String mUsername;
 	String mNickname;
 
@@ -79,14 +82,14 @@ public class ShanbayProvider extends Provider {
 			mShanbayView.mLoginPanel.showPanel();
 		}
 	}
-	
-	//FIXME 不应该提供公共方法
-	public void logout(){
-		if(mShanbayDict!=null){
+
+	// FIXME 不应该提供公共方法
+	public void logout() {
+		if (mShanbayDict != null) {
 			mShanbayDict.logout();
 		}
 		mUsername = null;
-		mNickname = null;		
+		mNickname = null;
 		Editor editor = getSharedPreferences().edit();
 		editor.remove(KEY_USERNAME);
 		editor.remove(KEY_PASSWORD);
@@ -113,7 +116,7 @@ public class ShanbayProvider extends Provider {
 	}
 
 	String pswRequest() {
-		Log.d(getClass().getName(),"pswRequest");
+		Log.d(getClass().getName(), "pswRequest");
 		SharedPreferences preferences = getSharedPreferences();
 		boolean hasPsw = preferences.getBoolean(KEY_STORE_PASSWORD, true);
 		if (hasPsw) {
@@ -197,15 +200,22 @@ public class ShanbayProvider extends Provider {
 		if (uri == null) {
 			return;
 		}
-
 		try {
 			if (mp == null) {
 				mp = MediaPlayer.create(mContext, uri);
+				mp.setOnCompletionListener(mShanbayView.mCompletionListener);
 				mp.start();
 			} else if (!mp.isPlaying()) {
 				mp.start();
 			}
 		} catch (Exception ex) {
+			try {
+				mShanbayView.mMessenger.send(Message.obtain(null,
+						MSG_PLAY_AUDIO_FINISHED));
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Log.w("Media", ex);
 		}
 	}
@@ -231,7 +241,6 @@ public class ShanbayProvider extends Provider {
 	protected void onUpdate() {
 		mShanbayView.setWordWrapper(mWordWrapper);
 	}
-	
 
 	class ShanbayView extends CommUIImpl implements View.OnClickListener {
 		private ViewAnimator root;
@@ -250,6 +259,20 @@ public class ShanbayProvider extends Provider {
 		// private ShanbayDict.WordWrapper mWordWrapper;
 		private View mWordPanel;
 		private TextView mBlankPanel;
+
+		private OnCompletionListener mCompletionListener = new OnCompletionListener() {
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				try {
+					mMessenger.send(Message.obtain(null,
+							MSG_PLAY_AUDIO_FINISHED));
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
 
 		public ShanbayView(Context context) {
 			super(context, R.layout.shanbay_word);
@@ -303,8 +326,8 @@ public class ShanbayProvider extends Provider {
 
 		private void showBlankPanel() {
 			show();
-			mBlankPanel.setText(Html.fromHtml(
-					String.format(mContext.getString(R.string.shanbay_welcome_template, mNickname))));
+			mBlankPanel.setText(Html.fromHtml(String.format(mContext.getString(
+					R.string.shanbay_welcome_template, mNickname))));
 			if (root.getCurrentView() != mBlankPanel) {
 				root.setDisplayedChild(root.indexOfChild(mBlankPanel));
 			}
@@ -354,9 +377,15 @@ public class ShanbayProvider extends Provider {
 				sendMessage(msg);
 			} else if (v == mAudioButton) {
 
+				mAudioButton.setImageResource(R.drawable.speaker_anim);
+				AnimationDrawable frameAnimation = (AnimationDrawable) mAudioButton
+						.getDrawable();
+				frameAnimation.start();
+
 				Message msg = Message.obtain(null, MSG_LOADING_AUDIO,
 						new Provider.MessageObj(mWordWrapper,
 								ShanbayProvider.this));
+
 				msg.replyTo = mMessenger;
 				sendMessage(msg);
 			} else if (v == mSwitchButton) {
@@ -388,6 +417,9 @@ public class ShanbayProvider extends Provider {
 				switch (msg.what) {
 				case MSG_ADD_WORD_FINISHED:
 					update();
+					break;
+				case MSG_PLAY_AUDIO_FINISHED:
+					mAudioButton.setImageResource(R.drawable.speaker_0);
 					break;
 				case MSG_GET_EXAMPLE_FINISHED:
 					mExamplePanel.handleFgMsg(msg);
@@ -456,8 +488,7 @@ public class ShanbayProvider extends Provider {
 						if (mShanbayDict == null) {
 							mShanbayDict = new ShanbayDict(ShanbayProvider.this);
 						}
-						userInfo = mShanbayDict.loginAndGetUserInfo(usr,
-								psw);
+						userInfo = mShanbayDict.loginAndGetUserInfo(usr, psw);
 						if (userInfo != null) {
 							int r;
 							try {
@@ -470,7 +501,7 @@ public class ShanbayProvider extends Provider {
 									return;
 								}
 							} catch (JSONException e) {
-								
+
 								e.printStackTrace();
 							}
 						}

@@ -1,6 +1,6 @@
 import os,re,shutil
 
-t = '32'
+t = '48'
 p = re.compile('(speaker_\d)_(\d+)\.png')
 for f in os.listdir('.'):
     m = p.search(f)
