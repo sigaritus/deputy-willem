@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
@@ -239,7 +240,7 @@ public class ShanbayProvider extends Provider {
 		TextView mContentText;
 
 		Button mAddButton;
-		Button mAudioButton;
+		ImageButton mAudioButton;
 
 		Button mSwitchButton;
 		Button mExampleButton;
@@ -257,7 +258,7 @@ public class ShanbayProvider extends Provider {
 			mBlankPanel = (TextView) root.findViewById(R.id.blank);
 
 			mAddButton = (Button) mWordPanel.findViewById(R.id.add);
-			mAudioButton = (Button) mWordPanel.findViewById(R.id.sound);
+			mAudioButton = (ImageButton) mWordPanel.findViewById(R.id.sound);
 			mSwitchButton = (Button) mWordPanel
 					.findViewById(R.id.switch_button);
 			mExampleButton = (Button) mWordPanel.findViewById(R.id.example);

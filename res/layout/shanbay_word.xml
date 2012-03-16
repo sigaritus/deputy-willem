@@ -28,14 +28,13 @@
                 android:layout_height="wrap_content"
                 android:gravity="bottom" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/sound"
-                style="@style/DictButton"
+                android:src="@drawable/speaker_anim"
+                android:background="@android:color/transparent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
                 android:contentDescription="@string/audio"
-                android:text="@string/audio"
                 android:visibility="gone" />
         </LinearLayout>
 
