@@ -10,7 +10,7 @@
         <activity
             android:name="MainActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:icon="@drawable/touch_icon"
+            android:icon="@drawable/ic_dw_96"
             android:label="@string/app_name"
             android:launchMode="singleTask" >
             <intent-filter>
