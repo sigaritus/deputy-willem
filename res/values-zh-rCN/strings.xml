@@ -25,5 +25,8 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="shanbay_note_hint">请输入少于300字的笔记</string>
+     <string name="shanbay_example_template"  formatted="false">%s&lt;font color="#c5663e"&gt;%s&lt;/font&gt;%s&lt;br /&gt;&lt;font color="#666666"&gt;%s&lt;/font&gt;</string>
+    <string name="shanbay_welcome_template" formatted="false"> &lt;b&gt;%s&lt;/b&gt; 的扇贝词典</string>
+    
 
 </resources>

@@ -17,8 +17,6 @@
     <string name="menu_bind_notification">Bind Notification</string>
     <string name="definition">Zh</string>
     <string name="en_definition">En</string>
-    <string name="shanbay_example_template"  formatted="false">%s&lt;font color="#c5663e"&gt;%s&lt;/font&gt;%s&lt;br /&gt;&lt;font color="#666666"&gt;%s&lt;/font&gt;</string>
-    <string name="shanbay_welcome_template" formatted="false"> &lt;b&gt;%s&lt;/b&gt; 的扇贝词典</string>
     <string name="shanbay_example">Exes</string>
     <string name="shanbay_note">Note</string>
     <string name="post">Post</string>
@@ -27,5 +25,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="shanbay_note_hint">shanbay_note_hint</string>
+    <string name="shanbay_example_template"  formatted="false">%s&lt;font color="#c5663e"&gt;%s&lt;/font&gt;%s&lt;br /&gt;&lt;font color="#666666"&gt;%s&lt;/font&gt;</string>
+    <string name="shanbay_welcome_template" formatted="false"> &lt;b&gt;%s&lt;/b&gt; 的扇贝词典</string>
 
 </resources>
