@@ -60,7 +60,6 @@ public class ShanbayProvider extends Provider {
 	String mNickname;
 
 	Word mWordWrapper;
-	ShanbayLoginActivity mShanbayLoginActivity;
 	private ShanbayView mShanbayView;
 
 	// Provider.MessageObj mProvider.MessageObj;
