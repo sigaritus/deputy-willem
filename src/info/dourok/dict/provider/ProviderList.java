@@ -63,7 +63,7 @@ public class ProviderList extends Provider {
 	@Override
 	protected void onQuery(CharSequence chars) {
 		for (Provider p : mProviders) {
-			if (p.filter(chars)) {
+			if (p.isValid(chars)) {
 				mUI.show(p);
 				p.query(chars);
 			}
@@ -84,7 +84,7 @@ public class ProviderList extends Provider {
 	}
 
 	@Override
-	public boolean filter(CharSequence chars) {
+	public boolean isValid(CharSequence chars) {
 		return true;
 	}
 

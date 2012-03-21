@@ -30,7 +30,7 @@
 
             <ImageButton
                 android:id="@+id/sound"
-                android:src="@drawable/speaker_0"
+                android:src="@drawable/ic_speaker_0"
                 android:background="@android:color/transparent"
                 android:layout_width="wrap_content"
                 android:paddingLeft="12dip"

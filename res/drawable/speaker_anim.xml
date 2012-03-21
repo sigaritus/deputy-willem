@@ -2,16 +2,16 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:drawable="@drawable/speaker_0"
+        android:drawable="@drawable/ic_speaker_0"
         android:duration="200"/>
     <item
-        android:drawable="@drawable/speaker_1"
+        android:drawable="@drawable/ic_speaker_1"
         android:duration="200"/>
     <item
-        android:drawable="@drawable/speaker_2"
+        android:drawable="@drawable/ic_speaker_2"
         android:duration="200"/>
     <item
-        android:drawable="@drawable/speaker_3"
+        android:drawable="@drawable/ic_speaker_3"
         android:duration="200"/>
 
 </animation-list>

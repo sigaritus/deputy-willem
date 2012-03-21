@@ -104,7 +104,7 @@ public class DictService extends Service implements DictCommunication {
 	public void bindClipboard() {
 		mClipboardAgency.bindClipboard();
 		NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		int icon = R.drawable.touch_icon;
+		int icon = R.drawable.ic_stat_notify_shanbay;
 		CharSequence tickerText = getString(R.string.listenning_clipboard);
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, tickerText, when);
@@ -137,7 +137,7 @@ public class DictService extends Service implements DictCommunication {
 	public void bindNotification() {
 
 		NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		int icon = R.drawable.touch_icon;
+		int icon = R.drawable.ic_stat_notify_shanbay;
 		CharSequence tickerText = getString(R.string.bind_to_notification_bar);
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, tickerText, when);

@@ -132,7 +132,7 @@ public abstract class Provider implements DictCommunication {
 	 * @param chars
 	 * @return
 	 */
-	public abstract boolean filter(CharSequence chars);
+	public abstract boolean isValid(CharSequence chars);
 
 	public abstract UI getUI();
 

@@ -51,13 +51,9 @@ public class MainActivity extends Activity implements View.OnClickListener,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		System.out.println("onCreate");
 		mClipboardAgency = ClipboardAgency.getClipboardAgency(this);
 		setContentView(R.layout.main);
 		AppCookieStore.load(this);
-		// 不再需要查询键,使用Ime按键代替
-		// mQueryButton = (Button) findViewById(R.id.query);
-		// mQueryButton.setOnClickListener(this);
 
 		mProvider = new ShanbayProvider(this);
 		// mProvider = new ProviderList(this);
@@ -164,26 +160,26 @@ public class MainActivity extends Activity implements View.OnClickListener,
 	protected void onStart() {
 		super.onStart();
 		doBindService();
-		System.out.println("onStart");
+		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		System.out.println("onResume");
+
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		System.out.println("onPause");
+
 	}
 
 	@Override
 	protected void onStop() {
 		doUnbindService();
 		super.onStop();
-		System.out.println("onStop");
+
 	}
 
 	@Override

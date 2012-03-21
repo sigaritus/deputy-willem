@@ -195,7 +195,7 @@ public class ShanbayDict {
 					mLocalContext);
 			getAdd.abort();
 			if (json == null) {
-				// json解析是吧,可能是session过期了.重新登录再请求
+				// json解析失败,可能是session过期了.重新登录再请求
 				if (!recall) {
 					if (login()) {
 						addWord(word, true);

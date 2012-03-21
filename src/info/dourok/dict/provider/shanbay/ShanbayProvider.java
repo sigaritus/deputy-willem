@@ -1,14 +1,15 @@
 package info.dourok.dict.provider.shanbay;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import info.dourok.dict.MiscUtils;
 import info.dourok.dict.R;
 import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Examples;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Examples.Example;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Word;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -26,7 +27,6 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,6 +42,7 @@ public class ShanbayProvider extends Provider {
 	private static final String KEY_NICKNAME = "nickname";
 	private static final String KEY_STORE_PASSWORD = "store_password";
 
+	
 	private final static int MSG_ADD_WORD = MSG_MIN_VALUE + 1;
 	private final static int MSG_LOADING_AUDIO = MSG_MIN_VALUE + 2;
 	private final static int MSG_ADD_WORD_FINISHED = MSG_MIN_VALUE + 3;
@@ -54,6 +55,7 @@ public class ShanbayProvider extends Provider {
 	private final static int MSG_ADD_NOTE_FINISHED = MSG_MIN_VALUE + 10;
 	private final static int MSG_AUTO_LOGIN_FAILED = MSG_MIN_VALUE + 11;
 	private final static int MSG_PLAY_AUDIO_FINISHED = MSG_MIN_VALUE + 12;
+
 	String mUsername;
 	String mNickname;
 
@@ -140,7 +142,7 @@ public class ShanbayProvider extends Provider {
 	}
 
 	@Override
-	public boolean filter(CharSequence chars) {
+	public boolean isValid(CharSequence chars) {
 		return chars != null && chars.length() < 25 && MiscUtils.isAcsii(chars);
 	}
 
@@ -419,7 +421,7 @@ public class ShanbayProvider extends Provider {
 					update();
 					break;
 				case MSG_PLAY_AUDIO_FINISHED:
-					mAudioButton.setImageResource(R.drawable.speaker_0);
+					mAudioButton.setImageResource(R.drawable.ic_speaker_0);
 					break;
 				case MSG_GET_EXAMPLE_FINISHED:
 					mExamplePanel.handleFgMsg(msg);
@@ -507,11 +509,10 @@ public class ShanbayProvider extends Provider {
 						}
 						msg.replyTo
 								.send(Message.obtain(null, MSG_LOGIN_FAILED));
-
 					}
 
 				} catch (RemoteException ex) {
-					Log.w("MSG_ADD_WORD", ex);
+					Log.w("MSG_LOGIN", ex);
 				}
 
 			}

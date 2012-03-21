@@ -51,7 +51,7 @@ public class ShanbayNoteProvider extends Provider {
 	}
 
 	@Override
-	public boolean filter(CharSequence chars) {
+	public boolean isValid(CharSequence chars) {
 		// TODO Auto-generated method stub
 		return true;
 	}
