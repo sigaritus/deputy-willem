@@ -1,7 +1,7 @@
 package info.dourok.dict.provider;
 
 import info.dourok.dict.DictCommunication;
-import info.dourok.dict.R;
+import info.dourok.dict.shanbay.R;
 import info.dourok.dict.TeaSharedPreferences;
 import android.content.Context;
 import android.content.SharedPreferences;

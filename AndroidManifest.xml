@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="info.dourok.dict"
+    package="info.dourok.dict.shanbay"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -8,7 +8,7 @@
 
     <application android:label="@string/app_name" >
         <activity
-            android:name="MainActivity"
+            android:name="info.dourok.dict.MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:icon="@drawable/ic_launcher_dw"
             android:label="@string/app_name"

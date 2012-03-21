@@ -4,6 +4,7 @@ import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayProvider;
 import android.app.Activity;
 import android.app.AlertDialog;
+import info.dourok.dict.shanbay.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -160,7 +161,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 	protected void onStart() {
 		super.onStart();
 		doBindService();
-		
+
 	}
 
 	@Override
@@ -221,16 +222,20 @@ public class MainActivity extends Activity implements View.OnClickListener,
 			}
 			break;
 		case MENU_SHANBAY_LOGOUT:
-			new AlertDialog.Builder(this).setTitle("确认登出扇贝网?")
-				.setPositiveButton(getString(android.R.string.yes), new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						mProvider.logout();
-					}
-				})
-				.setNegativeButton(getString(android.R.string.cancel), null).show();
-			
+			new AlertDialog.Builder(this)
+					.setTitle("确认登出扇贝网?")
+					.setPositiveButton(getString(android.R.string.yes),
+							new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									mProvider.logout();
+								}
+							})
+					.setNegativeButton(getString(android.R.string.cancel), null)
+					.show();
+
 			break;
 		default:
 			break;
@@ -312,27 +317,27 @@ public class MainActivity extends Activity implements View.OnClickListener,
 		}
 	}
 
-	private void query(){
+	private void query() {
 		// mWordView.busy(true); // FIXME 通知所有Provider 准备
 		String w = mWordEditText.getText().toString();
 		mProviderMessageObj.obj = w;
-					Message msg = Message.obtain(null, MSG_QUERY, mProviderMessageObj);
-					// msg.replyTo = mMessenger;
-					try {
-						mProvider.getUI().busy();
-						mService.send(msg);
-						
-					} catch (RemoteException ex) {
-						Log.w("Send MSG_QUERY_WORD", ex);
-					}
+		Message msg = Message.obtain(null, MSG_QUERY, mProviderMessageObj);
+		// msg.replyTo = mMessenger;
+		try {
+			mProvider.getUI().busy();
+			mService.send(msg);
+
+		} catch (RemoteException ex) {
+			Log.w("Send MSG_QUERY_WORD", ex);
+		}
 	}
-	
+
 	@Override
 	public void onClick(View v) {
-//		if (v == mQueryButton) {
-//			query();
-//			}
-//		}
+		// if (v == mQueryButton) {
+		// query();
+		// }
+		// }
 	}
 
 	Messenger mService = null;

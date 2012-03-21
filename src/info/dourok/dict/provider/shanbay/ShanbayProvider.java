@@ -1,7 +1,7 @@
 package info.dourok.dict.provider.shanbay;
 
 import info.dourok.dict.MiscUtils;
-import info.dourok.dict.R;
+import info.dourok.dict.shanbay.R;
 import info.dourok.dict.provider.Provider;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Examples;
 import info.dourok.dict.provider.shanbay.ShanbayDict.Examples.Example;

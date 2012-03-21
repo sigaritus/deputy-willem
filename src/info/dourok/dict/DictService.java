@@ -5,6 +5,7 @@
 package info.dourok.dict;
 
 import info.dourok.dict.provider.Provider;
+import info.dourok.dict.shanbay.R;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

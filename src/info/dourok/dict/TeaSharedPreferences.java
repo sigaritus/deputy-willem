@@ -6,7 +6,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
-
+/**
+ * 
+ * @author douo
+ *
+ */
 public class TeaSharedPreferences implements SharedPreferences {
 	protected static final String CHARSET = "utf-8";
 	private static final byte[] QUOTE = ("夫君子之行，静以修身，俭以养德。" +
@@ -144,7 +148,7 @@ public class TeaSharedPreferences implements SharedPreferences {
 			String result = new String(Base64.encode(
 					mTea.encrypt(value.getBytes(CHARSET)), Base64.DEFAULT),
 					CHARSET);
-			Log.d(getClass().getName(),value+ " encrypt " + result);
+			//Log.d(getClass().getName(),value+ " encrypt " + result);
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -157,7 +161,7 @@ public class TeaSharedPreferences implements SharedPreferences {
 		try {
 			String result = new String(mTea.decrypt(Base64.decode(
 					value.getBytes(CHARSET), Base64.DEFAULT)), CHARSET);
-			Log.d(getClass().getName(),value+ " decrypt " + result);
+			//Log.d(getClass().getName(),value+ " decrypt " + result);
 			return result;
 		} catch (Exception e) {
 			return null;
