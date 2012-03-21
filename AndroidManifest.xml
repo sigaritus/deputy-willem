@@ -27,13 +27,8 @@
             android:taskAffinity=""
             android:theme="@style/Theme.Transparent" >
         </activity>
-        <activity
-            android:name=".provider.shanbay.ShanbayLoginActivity"
-            
-            android:theme="@android:style/Theme.Dialog" >
-        </activity>
 
-        <service android:name=".DictService" />
+        <service android:name="info.dourok.dict.DictService" />
     </application>
 
 </manifest>

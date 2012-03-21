@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ShanBayQuery</string>
+    <string name="app_name">Deputy Willem</string>
     <string name="query">Query</string>
     <string name="add">Add</string>
     <string name="added">Added</string>
