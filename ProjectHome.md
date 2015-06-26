@@ -1,0 +1,1 @@
+a universal dictionary for mobile device
